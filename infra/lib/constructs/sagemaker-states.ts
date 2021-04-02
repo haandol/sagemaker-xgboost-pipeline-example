@@ -82,8 +82,8 @@ export class SagemakerStates extends cdk.Construct {
       outputPath: '$.Payload',
     })
     trainTask.addRetry({
-      interval: cdk.Duration.seconds(30),
-      maxAttempts: 1000,
+      interval: cdk.Duration.seconds(15),
+      maxAttempts: 5000,
       backoffRate: 1.1,
     })
     const deployTask = new tasks.LambdaInvoke(this, 'DeployTask', {
@@ -91,8 +91,8 @@ export class SagemakerStates extends cdk.Construct {
       outputPath: '$.Payload',
     })
     deployTask.addRetry({
-      interval: cdk.Duration.seconds(30),
-      maxAttempts: 1000,
+      interval: cdk.Duration.seconds(15),
+      maxAttempts: 5000,
       backoffRate: 1.1,
     })
 
