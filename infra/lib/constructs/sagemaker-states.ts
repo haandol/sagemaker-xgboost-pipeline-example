@@ -82,18 +82,18 @@ export class SagemakerStates extends cdk.Construct {
       outputPath: '$.Payload',
     })
     trainTask.addRetry({
-      interval: cdk.Duration.seconds(15),
+      interval: cdk.Duration.seconds(30),
       maxAttempts: 1000,
-      backoffRate: 1.3,
+      backoffRate: 1.1,
     })
     const deployTask = new tasks.LambdaInvoke(this, 'DeployTask', {
       lambdaFunction: stateFunctions.deployFunction,
       outputPath: '$.Payload',
     })
     deployTask.addRetry({
-      interval: cdk.Duration.seconds(15),
+      interval: cdk.Duration.seconds(30),
       maxAttempts: 1000,
-      backoffRate: 1.3,
+      backoffRate: 1.1,
     })
 
     const definition = sfn.Chain
