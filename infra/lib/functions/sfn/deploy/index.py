@@ -1,0 +1,36 @@
+import boto3
+import sagemaker
+
+client = boto3.client('sagemaker')
+
+
+class ResourceNotFound(Exception):
+    pass
+
+
+def handler(event, context):
+    event['stage'] = 'deploy'
+
+    job_name = event['job_name']
+    endpoint_name = event['endpoint_name']
+    status = None
+
+    try:
+        response = client.describe_endpoint(
+            EndpointName=endpoint_name
+        )
+        print(response)
+        status = response['EndpointStatus']
+    except:
+        estimator = sagemaker.estimator.Estimator.attach(job_name)
+        estimator.deploy(
+            initial_instance_count=1,
+            instance_type='ml.m5.2xlarge',
+            wait=False,
+            endpoint_name=endpoint_name,
+        )
+
+    if status != 'InService':
+        raise ResourceNotFound('the endpoint is not in-service')
+
+    return event
