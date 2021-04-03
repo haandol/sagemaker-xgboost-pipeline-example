@@ -1,14 +1,19 @@
 import os
+import json
 import boto3
 import sagemaker
 from sagemaker.inputs import TrainingInput
 
 client = boto3.client('sagemaker')
+
+REGION = os.environ['REGION']
 EXECUTION_ROLE = os.environ['ROLE_ARN']
 
-bucket = 'dongkyl-sagemaker'
-prefix = 'sagemaker/xgboost_credit_risk'
-region = 'ap-northeast-2'
+DEFAULT_HP = {
+    'eta': '0.1',
+    'objective': 'binary:logistic',
+    'num_round': '25'
+}
 
 
 class ResourceNotFound(Exception):
@@ -18,6 +23,11 @@ class ResourceNotFound(Exception):
 def handler(event, context):
     event['stage'] = 'train'
 
+    hyperparameters = event.get('hyperparameters', None)
+    hyperparameters = json.loads(hyperparameters) if hyperparameters else DEFAULT_HP
+
+    bucket = event['bucket']
+    prefix = event['prefix']
     job_name = event['job_name']
     status = None
 
@@ -28,17 +38,14 @@ def handler(event, context):
         print(response)
         status = response['TrainingJobStatus']
     except:
-        xgboost_container = sagemaker.image_uris.retrieve("xgboost", region, "1.2-1")
-        s3_input_train = TrainingInput(s3_data='s3://{}/{}/train'.format(bucket, prefix), content_type='csv')
-        s3_input_validation = TrainingInput(s3_data='s3://{}/{}/validation/'.format(bucket, prefix), content_type='csv')
-        hyperparameters = {
-            "eta":"0.1",
-            "objective":"binary:logistic",
-            "num_round":"25"
-        }
-
+        xgboost_container = sagemaker.image_uris.retrieve('xgboost', REGION, '1.2-1')
+        s3_input_train = TrainingInput(
+            s3_data='s3://{}/{}/train'.format(bucket, prefix), content_type='csv'
+        )
+        s3_input_validation = TrainingInput(
+            s3_data='s3://{}/{}/validation/'.format(bucket, prefix), content_type='csv'
+        )
         output_path='s3://{}/{}/output'.format(bucket, prefix)
-
         estimator = sagemaker.estimator.Estimator(
             image_uri=xgboost_container, 
             hyperparameters=hyperparameters,
@@ -46,7 +53,7 @@ def handler(event, context):
             instance_count=1, 
             instance_type='ml.m5.2xlarge', 
             volume_size=5,
-            output_path=output_path
+            output_path=output_path,
         )
 
         estimator.fit(
