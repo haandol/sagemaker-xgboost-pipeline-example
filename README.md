@@ -1,5 +1,7 @@
 # Amazon Sagemaker Xgboost Pipeline
 
+`This document is working progress`
+
 This repository is about build MLOps pipeline for Amazon Sagemaker built-in Xgboost regression model
 
 <img src="img/architecture.png" />
