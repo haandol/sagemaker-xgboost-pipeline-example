@@ -4,6 +4,8 @@ This repository is about build MLOps pipeline for Amazon Sagemaker built-in Xgbo
 
 <img src="img/architecture.png" />
 
+**API Gateway is not included in this project**
+
 # Prerequisites
 
 - awscli
