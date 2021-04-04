@@ -21,6 +21,10 @@ export class SagemakerStates extends cdk.Construct {
 
     const stateFunctions = this.createSfnFunctions()
     this.stateMachine = this.createStateMachine(stateFunctions)
+
+    new cdk.CfnOutput(this, `StatemachineArn`, {
+      value: this.stateMachine.stateMachineArn
+    })
   }
 
   private createSfnFunctions(): IStateFunctions {
