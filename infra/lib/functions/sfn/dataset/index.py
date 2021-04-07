@@ -15,7 +15,7 @@ def handler(event, context):
     event['bucket'] = bucket
     event['prefix'] = prefix
 
-    job_prefix = event.get('job_prefix', 'dongkyl')
+    job_prefix = event.get('job_prefix', 'xgboost-credit')
     job_uniq_id = int(datetime.now().timestamp())
     job_name = f'{job_prefix}-{job_uniq_id}'
     endpoint_name = f'{job_prefix}-{job_uniq_id}'
