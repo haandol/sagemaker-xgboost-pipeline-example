@@ -45,7 +45,7 @@ create bucket
 
 ```bash
 $ export BUCKET_NAME=dongkyl-sagemaker
-$ aws s3api create-bucket --bucket $BUCKET_NAME --region ap-norhteast-2 --create-bucket-configuration LocationConstraint=ap-northeast-2
+$ aws s3api create-bucket --bucket $BUCKET_NAME --region ap-northeast-2 --create-bucket-configuration LocationConstraint=ap-northeast-2
 ```
 
 upload original dataset to the bucket. the dataset is [**credit card clients dataset from UCI**](https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients)
