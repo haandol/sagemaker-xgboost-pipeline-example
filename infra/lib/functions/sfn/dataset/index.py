@@ -6,11 +6,12 @@ from datetime import datetime
 
 s3 = boto3.client('s3')
 
+bucket = os.environ['BUCKET']
+
 
 def handler(event, context):
     event['stage'] = 'dataset'
 
-    bucket = event.get('bucket', 'dongkyl-sagemaker')
     prefix = event.get('prefix', 'sagemaker/xgboost_credit_risk')
     event['bucket'] = bucket
     event['prefix'] = prefix

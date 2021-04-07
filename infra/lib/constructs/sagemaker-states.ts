@@ -1,11 +1,16 @@
 import * as path from 'path'
 import * as cdk from '@aws-cdk/core'
 import * as iam from '@aws-cdk/aws-iam'
+import * as s3 from '@aws-cdk/aws-s3'
 import * as lambda from '@aws-cdk/aws-lambda'
 import * as lambdaPython from '@aws-cdk/aws-lambda-python'
 import * as sfn from '@aws-cdk/aws-stepfunctions'
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
 import { Stack } from '../interfaces/config'
+
+interface IProps {
+  bucket: s3.IBucket
+}
 
 interface IStateFunctions {
   datasetFunction: lambda.IFunction
@@ -16,10 +21,10 @@ interface IStateFunctions {
 export class SagemakerStates extends cdk.Construct {
   public readonly stateMachine: sfn.StateMachine
 
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: cdk.Construct, id: string, props: IProps) {
     super(scope, id)
 
-    const stateFunctions = this.createSfnFunctions()
+    const stateFunctions = this.createSfnFunctions(props.bucket)
     this.stateMachine = this.createStateMachine(stateFunctions)
 
     new cdk.CfnOutput(this, `StatemachineArn`, {
@@ -27,22 +32,23 @@ export class SagemakerStates extends cdk.Construct {
     })
   }
 
-  private createSfnFunctions(): IStateFunctions {
+  private createSfnFunctions(bucket: s3.IBucket): IStateFunctions {
     const sagemakerExecutionRole = new iam.Role(this, 'SagemakerExecutionRole', {
       assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
       managedPolicies: [
         { managedPolicyArn: 'arn:aws:iam::aws:policy/AmazonSageMakerAdmin-ServiceCatalogProductsServiceRolePolicy' },
-        { managedPolicyArn: 'arn:aws:iam::aws:policy/AmazonS3FullAccess' },
       ],
     })
+    bucket.grantReadWrite(sagemakerExecutionRole)
+
     const lambdaExecutionRole = new iam.Role(this, 'LambdaExecutionRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [
         { managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
         { managedPolicyArn: 'arn:aws:iam::aws:policy/AmazonSagemakerFullAccess' },
-        { managedPolicyArn: 'arn:aws:iam::aws:policy/AmazonS3FullAccess' },
       ],
     })
+    bucket.grantReadWrite(lambdaExecutionRole)
 
     const datasetFunction = new lambdaPython.PythonFunction(this, 'DatasetFunction', {
       entry: path.join(__dirname, '..', 'functions', 'sfn', 'dataset'),
@@ -51,6 +57,9 @@ export class SagemakerStates extends cdk.Construct {
       role: lambdaExecutionRole,
       memorySize: 2048,
       timeout: cdk.Duration.minutes(5),
+      environment: {
+        BUCKET: bucket.bucketName,
+      },
     })
     const trainFunction = new lambdaPython.PythonFunction(this, 'TrainFunction', {
       entry: path.join(__dirname, '..', 'functions', 'sfn', 'train'),

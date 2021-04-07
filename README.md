@@ -41,29 +41,32 @@ $ cdk deploy "*" --require-approval never
 
 ## Upload dataset to S3
 
-create bucket
+deployment will displays state-machine-arn on the terminal,
+
+*SagemakerXgboostDemoInfraStack.SagemakerBucketOutput = sagemakerxgboostdemoinfra-sagemakerbucketXXXXXXXX-YYYYYYYYYYYY*
+
+set it as environment for use later
 
 ```bash
-$ export BUCKET_NAME=dongkyl-sagemaker
-$ aws s3api create-bucket --bucket $BUCKET_NAME --region ap-northeast-2 --create-bucket-configuration LocationConstraint=ap-northeast-2
+$ export BUCKET_NAME=sagemakerxgboostdemoinfra-sagemakerbucketXXXXXXXX-YYYYYYYYYYYY
 ```
 
 upload original dataset to the bucket. the dataset is [**credit card clients dataset from UCI**](https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients)
 
 ```bash
-$ aws s3 cp ../data/card.xls s3://$BUCKET_NAME/card.xls 
+$ aws s3 cp ../data/card.xls s3://$BUCKET_NAME/card.xls
 ```
 
 ## Execute statemachine
 
 deployment will displays state-machine-arn on the terminal,
 
-*SagemakerXgboostDemoInfraStack.SagemakerStatesStatemachineArnDBA88BAA = arn:aws:states:ap-northeast-2:929831892372:stateMachine:StateMachine*
+*SagemakerXgboostDemoInfraStack.SagemakerStatesStatemachineArnXXXXXXXX = arn:aws:states:ap-northeast-2:929831892372:stateMachine:StateMachine*
 
 run statemachine with AWSCLI
 
 ```bash
-$ aws stepfunctions start-execution --state-machine-arn arn:aws:states:ap-northeast-2:929831892372:stateMachine:StateMachine --input "{\"bucket\": \"$BUCKET_NAME\"}"
+$ aws stepfunctions start-execution --state-machine-arn arn:aws:states:ap-northeast-2:929831892372:stateMachine:StateMachine
 {
     "executionArn": "arn:aws:states:ap-northeast-2:929831892372:execution:StateMachine:b1b23dd1-b2e6-40dd-b1b8-b07183505d9e",
     "startDate": 1617504354.973
