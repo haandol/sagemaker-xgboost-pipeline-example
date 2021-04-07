@@ -70,7 +70,7 @@ $ aws stepfunctions start-execution --state-machine-arn arn:aws:states:ap-northe
 }
 ```
 
-visit [**AWS StepFunctions Console**]() page and check if the statemachine is working
+visit [**AWS StepFunctions Console**](https://ap-northeast-2.console.aws.amazon.com/states/home?region=ap-northeast-2#/statemachines) page and check if the statemachine is working
 
 <img src="img/statemachine.png">
 
