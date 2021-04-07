@@ -27,7 +27,7 @@ $ npm i
 Install cdk in global context and run `cdk bootstrap` if you did not initailize cdk yet.
 
 ```bash
-$ npm i -g cdk
+$ npm i -g cdk@1.95.2
 $ cdk bootstrap
 ```
 
@@ -51,7 +51,7 @@ $ aws s3api create-bucket --bucket $BUCKET_NAME --region ap-norhteast-2 --create
 upload original dataset to the bucket. the dataset is [**credit card clients dataset from UCI**](https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients)
 
 ```bash
-$ aws s3 cp data/card.xls s3://$BUCKET_NAME/card.xls 
+$ aws s3 cp ../data/card.xls s3://$BUCKET_NAME/card.xls 
 ```
 
 ## Execute statemachine
