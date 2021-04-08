@@ -61,12 +61,18 @@ $ aws s3 cp ../data/card.xls s3://$BUCKET_NAME/card.xls
 
 deployment will displays state-machine-arn on the terminal,
 
-*SagemakerXgboostDemoInfraStack.SagemakerStatesStatemachineArnXXXXXXXX = arn:aws:states:ap-northeast-2:929831892372:stateMachine:StateMachine*
+*SagemakerXgboostDemoInfraStack.SagemakerStatesStatemachineArnXXXXXXXX = arn:aws:states:ap-northeast-2:XXXXXXXXXXXX:stateMachine:StateMachine*
+
+set it as environment for use later
+
+```bash
+$ export STATE_MACHINE=arn:aws:states:ap-northeast-2:XXXXXXXXXXXX:stateMachine:StateMachine
+```
 
 run statemachine with AWSCLI
 
 ```bash
-$ aws stepfunctions start-execution --state-machine-arn arn:aws:states:ap-northeast-2:929831892372:stateMachine:StateMachine
+$ aws stepfunctions start-execution --state-machine-arn $STATE_MACHINE
 {
     "executionArn": "arn:aws:states:ap-northeast-2:929831892372:execution:StateMachine:b1b23dd1-b2e6-40dd-b1b8-b07183505d9e",
     "startDate": 1617504354.973
