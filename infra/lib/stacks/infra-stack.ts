@@ -14,6 +14,7 @@ export class InfraStack extends cdk.Stack {
 
   private createBucket(): s3.IBucket {
     const bucket = new s3.Bucket(this, `SagemakerBucket`, {
+      autoDeleteObjects: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     })
     new cdk.CfnOutput(this, `SagemakerBucketOutput`, {
