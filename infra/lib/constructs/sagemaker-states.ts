@@ -6,7 +6,6 @@ import * as lambda from '@aws-cdk/aws-lambda'
 import * as lambdaPython from '@aws-cdk/aws-lambda-python'
 import * as sfn from '@aws-cdk/aws-stepfunctions'
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
-import { Stack } from '../interfaces/config'
 
 interface IProps {
   bucket: s3.IBucket
@@ -69,7 +68,7 @@ export class SagemakerStates extends cdk.Construct {
       role: lambdaExecutionRole,
       environment: {
         ROLE_ARN: sagemakerExecutionRole.roleArn,
-        REGION: Stack.Props.env.region,
+        REGION: cdk.Stack.of(this).region,
       },
     })
     const deployFunction = new lambdaPython.PythonFunction(this, 'DeployFunction', {
