@@ -5,6 +5,4 @@ import { InfraStack } from '../lib/stacks/infra-stack'
 import { App, Stack } from '../lib/interfaces/config'
 
 const app = new cdk.App()
-new InfraStack(app, `${App.Namespace}InfraStack`, {
-  ...Stack.Props,
-})
+new InfraStack(app, `${App.Namespace}InfraStack`)
