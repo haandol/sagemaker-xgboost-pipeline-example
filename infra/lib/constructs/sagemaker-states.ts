@@ -64,7 +64,7 @@ export class SagemakerStates extends cdk.Construct {
       entry: path.join(__dirname, '..', 'functions', 'sfn', 'train'),
       handler: 'handler',
       runtime: lambda.Runtime.PYTHON_3_8,
-      timeout: cdk.Duration.minutes(5),
+      timeout: cdk.Duration.seconds(30),
       role: lambdaExecutionRole,
       environment: {
         ROLE_ARN: sagemakerExecutionRole.roleArn,
@@ -75,7 +75,7 @@ export class SagemakerStates extends cdk.Construct {
       entry: path.join(__dirname, '..', 'functions', 'sfn', 'deploy'),
       handler: 'handler',
       runtime: lambda.Runtime.PYTHON_3_8,
-      timeout: cdk.Duration.minutes(5),
+      timeout: cdk.Duration.seconds(30),
       role: lambdaExecutionRole,
     })
 
