@@ -32,7 +32,7 @@ def handler(event, context):
 
     if status == 'InService':
         return event
-    elif status == 'Creating' or status == 'Updating':
+    elif (status is None) or (status in ['Creating', 'Updating']):
         raise CreatingError('the endpoint is not in-service yet')
     else:
         raise RuntimeError(f'Error with status {status}')

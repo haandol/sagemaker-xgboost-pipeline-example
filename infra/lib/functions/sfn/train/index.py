@@ -67,7 +67,7 @@ def handler(event, context):
 
     if status == 'Completed':
         return event
-    elif status == 'InProgress':
+    elif (status is None) or (status == 'InProgress'):
         raise InProgressError('the training job is not completed yet')
     else:
         raise RuntimeError(f'Error with status: {status}')
