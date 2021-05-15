@@ -4,7 +4,7 @@ import sagemaker
 client = boto3.client('sagemaker')
 
 
-class CreatingError(Exception):
+class InProgressError(Exception):
     pass
 
 
@@ -33,6 +33,6 @@ def handler(event, context):
     if status == 'InService':
         return event
     elif (status is None) or (status in ['Creating', 'Updating']):
-        raise CreatingError('the endpoint is not in-service yet')
+        raise InProgressError('the endpoint is not in-service yet')
     else:
         raise RuntimeError(f'Error with status {status}')
