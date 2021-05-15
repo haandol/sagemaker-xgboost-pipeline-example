@@ -112,7 +112,7 @@ export class SagemakerStates extends cdk.Construct {
     })
     const failTask = new tasks.SnsPublish(this, `Fail`, {
       topic,
-      message: sfn.TaskInput.fromText('Failed')
+      message: sfn.TaskInput.fromJsonPathAt('$.Cause')
     })
 
     const datasetTask = new tasks.LambdaInvoke(this, 'DatasetTask', {
