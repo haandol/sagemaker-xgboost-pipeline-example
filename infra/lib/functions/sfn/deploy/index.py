@@ -1,7 +1,7 @@
 import boto3
 import sagemaker
 
-client = boto3.client('sagemaker')
+client = None
 
 
 class InProgressError(Exception):
@@ -16,6 +16,10 @@ def handler(event, context):
     status = None
 
     try:
+        global client
+        if not client:
+            client = boto3.client('sagemaker')
+
         response = client.describe_endpoint(
             EndpointName=endpoint_name
         )

@@ -4,7 +4,7 @@ import boto3
 import sagemaker
 from sagemaker.inputs import TrainingInput
 
-client = boto3.client('sagemaker')
+client = None
 
 REGION = os.environ['REGION']
 EXECUTION_ROLE = os.environ['ROLE_ARN']
@@ -32,6 +32,10 @@ def handler(event, context):
     status = None
 
     try:
+        global client
+        if not client:
+            client = boto3.client('sagemaker')
+
         response = client.describe_training_job(
             TrainingJobName=job_name
         )
