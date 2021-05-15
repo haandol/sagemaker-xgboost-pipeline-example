@@ -12,7 +12,7 @@ EXECUTION_ROLE = os.environ['ROLE_ARN']
 DEFAULT_HP = {
     'eta': '0.1',
     'objective': 'binary:logistic',
-    'num_round': '25'
+    'num_round': '20'
 }
 
 
