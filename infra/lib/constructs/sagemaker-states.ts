@@ -108,7 +108,7 @@ export class SagemakerStates extends cdk.Construct {
 
     const succeedTask = new tasks.SnsPublish(this, `Success`, {
       topic,
-      message: sfn.TaskInput.fromText('Success')
+      message: sfn.TaskInput.fromJsonPathAt('$')
     })
     const failTask = new tasks.SnsPublish(this, `Fail`, {
       topic,
