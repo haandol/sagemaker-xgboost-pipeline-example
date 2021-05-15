@@ -87,34 +87,44 @@ export class SagemakerStates extends cdk.Construct {
   }
 
   private createStateMachine(stateFunctions: IStateFunctions): sfn.StateMachine {
+    const succeedTask = new sfn.Succeed(this, `Success`)
+    const failTask = new sfn.Fail(this, `Fail`)
+
     const datasetTask = new tasks.LambdaInvoke(this, 'DatasetTask', {
       lambdaFunction: stateFunctions.datasetFunction,
+      timeout: cdk.Duration.minutes(1),
       outputPath: '$.Payload',
     })
     const trainTask = new tasks.LambdaInvoke(this, 'TrainTask', {
       lambdaFunction: stateFunctions.trainFunction,
+      timeout: cdk.Duration.seconds(30),
       outputPath: '$.Payload',
     })
     trainTask.addRetry({
+      errors: ['InProgressError'],
       interval: cdk.Duration.seconds(15),
       maxAttempts: 5000,
       backoffRate: 1.1,
     })
+    trainTask.addCatch(failTask)
     const deployTask = new tasks.LambdaInvoke(this, 'DeployTask', {
       lambdaFunction: stateFunctions.deployFunction,
+      timeout: cdk.Duration.seconds(30),
       outputPath: '$.Payload',
     })
     deployTask.addRetry({
+      errors: ['InProgressError'],
       interval: cdk.Duration.seconds(15),
       maxAttempts: 5000,
       backoffRate: 1.1,
     })
+    deployTask.addCatch(failTask)
 
     const definition = sfn.Chain
       .start(datasetTask)
       .next(trainTask)
       .next(deployTask)
-      .next(new sfn.Succeed(this, `Success`))
+      .next(succeedTask)
     const role = new iam.Role(this, 'StateMachineRole', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
       managedPolicies: [

@@ -16,7 +16,7 @@ DEFAULT_HP = {
 }
 
 
-class ResourceNotFound(Exception):
+class InProgressError(Exception):
     pass
 
 
@@ -65,7 +65,9 @@ def handler(event, context):
             job_name=job_name,
         )
 
-    if status != 'Completed':
-        raise ResourceNotFound('the training job is not completed')
-
-    return event
+    if status == 'Completed':
+        return event
+    elif status == 'InProgress':
+        raise InProgressError('the training job is not completed yet')
+    else:
+        raise RuntimeError(f'Error with status: {status}')

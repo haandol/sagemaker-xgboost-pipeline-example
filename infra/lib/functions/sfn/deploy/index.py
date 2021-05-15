@@ -4,7 +4,7 @@ import sagemaker
 client = boto3.client('sagemaker')
 
 
-class ResourceNotFound(Exception):
+class CreatingError(Exception):
     pass
 
 
@@ -30,7 +30,9 @@ def handler(event, context):
             endpoint_name=endpoint_name,
         )
 
-    if status != 'InService':
-        raise ResourceNotFound('the endpoint is not in-service')
-
-    return event
+    if status == 'InService':
+        return event
+    elif status == 'Creating' or status == 'Updating':
+        raise CreatingError('the endpoint is not in-service yet')
+    else:
+        raise RuntimeError(f'Error with status {status}')
