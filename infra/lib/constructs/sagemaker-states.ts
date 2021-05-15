@@ -92,9 +92,11 @@ export class SagemakerStates extends cdk.Construct {
 
     const datasetTask = new tasks.LambdaInvoke(this, 'DatasetTask', {
       lambdaFunction: stateFunctions.datasetFunction,
-      timeout: cdk.Duration.minutes(1),
+      timeout: cdk.Duration.minutes(5),
       outputPath: '$.Payload',
     })
+    datasetTask.addCatch(failTask)
+
     const trainTask = new tasks.LambdaInvoke(this, 'TrainTask', {
       lambdaFunction: stateFunctions.trainFunction,
       timeout: cdk.Duration.seconds(30),
@@ -107,6 +109,7 @@ export class SagemakerStates extends cdk.Construct {
       backoffRate: 1.1,
     })
     trainTask.addCatch(failTask)
+
     const deployTask = new tasks.LambdaInvoke(this, 'DeployTask', {
       lambdaFunction: stateFunctions.deployFunction,
       timeout: cdk.Duration.seconds(30),
