@@ -8,6 +8,7 @@ import * as lambda from '@aws-cdk/aws-lambda'
 import * as lambdaPython from '@aws-cdk/aws-lambda-python'
 import * as sfn from '@aws-cdk/aws-stepfunctions'
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
+import { App } from '../interfaces/config'
 
 interface IProps {
   bucket: s3.IBucket
@@ -26,9 +27,8 @@ export class SagemakerStates extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: IProps) {
     super(scope, id)
 
-    const stateFunctions = this.createSfnFunctions(props.bucket)
-
     const topic = new sns.Topic(this, `Topic`)
+    const stateFunctions = this.createSfnFunctions(props.bucket)
     this.stateMachine = this.createStateMachine(topic, stateFunctions)
     topic.grantPublish(this.stateMachine)
 
@@ -91,7 +91,7 @@ export class SagemakerStates extends cdk.Construct {
       timeout: cdk.Duration.seconds(30),
       role: lambdaExecutionRole,
       environment: {
-        CHIME_WEBHOOK: 'https://hooks.chime.aws/incomingwebhooks/f751e2d5-cfe3-48d8-a1a5-a61dad7d4133?token=R1IzWnd6Qkx8MXxXdTQyRHNPdG5mSUUxNWJQS3duRmFKRnhNLW5pSjdvUXAzSE9DMWdZOGtJ'
+        WEBHOOK: App.Webhook,
       },
     })
 

@@ -2,7 +2,7 @@ import os
 import json
 import requests
 
-webhook_uri = os.environ['CHIME_WEBHOOK']
+webhook_uri = os.environ['WEBHOOK']
 
 
 def handler(event, context):
