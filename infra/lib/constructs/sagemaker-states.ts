@@ -2,6 +2,8 @@ import * as path from 'path'
 import * as cdk from '@aws-cdk/core'
 import * as iam from '@aws-cdk/aws-iam'
 import * as s3 from '@aws-cdk/aws-s3'
+import * as sns from '@aws-cdk/aws-sns'
+import * as snsSubscriptions from '@aws-cdk/aws-sns-subscriptions'
 import * as lambda from '@aws-cdk/aws-lambda'
 import * as lambdaPython from '@aws-cdk/aws-lambda-python'
 import * as sfn from '@aws-cdk/aws-stepfunctions'
@@ -15,6 +17,7 @@ interface IStateFunctions {
   datasetFunction: lambda.IFunction
   trainFunction: lambda.IFunction
   deployFunction: lambda.IFunction
+  notifyFunction: lambda.IFunction
 }
 
 export class SagemakerStates extends cdk.Construct {
@@ -24,7 +27,10 @@ export class SagemakerStates extends cdk.Construct {
     super(scope, id)
 
     const stateFunctions = this.createSfnFunctions(props.bucket)
-    this.stateMachine = this.createStateMachine(stateFunctions)
+
+    const topic = new sns.Topic(this, `Topic`)
+    this.stateMachine = this.createStateMachine(topic, stateFunctions)
+    topic.grantPublish(this.stateMachine)
 
     new cdk.CfnOutput(this, `StatemachineArn`, {
       value: this.stateMachine.stateMachineArn
@@ -78,17 +84,36 @@ export class SagemakerStates extends cdk.Construct {
       timeout: cdk.Duration.seconds(30),
       role: lambdaExecutionRole,
     })
+    const notifyFunction = new lambdaPython.PythonFunction(this, 'NotifyFunction', {
+      entry: path.join(__dirname, '..', 'functions', 'sfn', 'notify'),
+      handler: 'handler',
+      runtime: lambda.Runtime.PYTHON_3_8,
+      timeout: cdk.Duration.seconds(30),
+      role: lambdaExecutionRole,
+      environment: {
+        CHIME_WEBHOOK: 'https://hooks.chime.aws/incomingwebhooks/f751e2d5-cfe3-48d8-a1a5-a61dad7d4133?token=R1IzWnd6Qkx8MXxXdTQyRHNPdG5mSUUxNWJQS3duRmFKRnhNLW5pSjdvUXAzSE9DMWdZOGtJ'
+      },
+    })
 
     return {
       datasetFunction,
       trainFunction,
       deployFunction,
+      notifyFunction,
     }
   }
 
-  private createStateMachine(stateFunctions: IStateFunctions): sfn.StateMachine {
-    const succeedTask = new sfn.Succeed(this, `Success`)
-    const failTask = new sfn.Fail(this, `Fail`)
+  private createStateMachine(topic: sns.ITopic, stateFunctions: IStateFunctions): sfn.StateMachine {
+    topic.addSubscription(new snsSubscriptions.LambdaSubscription(stateFunctions.notifyFunction))
+
+    const succeedTask = new tasks.SnsPublish(this, `Success`, {
+      topic,
+      message: sfn.TaskInput.fromText('Success')
+    })
+    const failTask = new tasks.SnsPublish(this, `Fail`, {
+      topic,
+      message: sfn.TaskInput.fromText('Failed')
+    })
 
     const datasetTask = new tasks.LambdaInvoke(this, 'DatasetTask', {
       lambdaFunction: stateFunctions.datasetFunction,
