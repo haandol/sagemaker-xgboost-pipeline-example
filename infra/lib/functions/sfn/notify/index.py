@@ -10,5 +10,5 @@ def handler(event, context):
 
     for record in event['Records']:
         message = record['Sns']['Message']
-        requests.post(url=webhook_uri, json={ 'Content': message })
+        requests.post(url=webhook_uri, json={ 'Content': message }, timeout=3)
     return 'ok'
