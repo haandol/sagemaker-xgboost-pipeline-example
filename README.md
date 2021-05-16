@@ -41,7 +41,7 @@ $ cdk deploy "*" --require-approval never
 
 ## Upload dataset to S3
 
-deployment will displays state-machine-arn on the terminal,
+deployment will display state-machine-arn on the terminal,
 
 *SagemakerXgboostDemoInfraStack.SagemakerBucketOutput = sagemakerxgboostdemoinfra-sagemakerbucketXXXXXXXX-YYYYYYYYYYYY*
 
@@ -59,7 +59,7 @@ $ aws s3 cp ../data/card.xls s3://$BUCKET_NAME/card.xls
 
 ## Execute statemachine
 
-deployment will displays state-machine-arn on the terminal,
+deployment will display state-machine-arn on the terminal,
 
 *SagemakerXgboostDemoInfraStack.SagemakerStatesStatemachineArnXXXXXXXX = arn:aws:states:ap-northeast-2:XXXXXXXXXXXX:stateMachine:StateMachine*
 
