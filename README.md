@@ -4,8 +4,6 @@ This repository is about build MLOps pipeline for Amazon Sagemaker built-in Xgbo
 
 <img src="img/architecture.png" />
 
-**API Gateway is not included in this project**
-
 # Prerequisites
 
 - awscli
@@ -30,6 +28,8 @@ Install cdk in global context and run `cdk bootstrap` if you did not initailize 
 $ npm i -g cdk@1.100.0
 $ cdk bootstrap
 ```
+
+Open [**config.ts**](infra/lib/interfaces/config.ts) and edit *App.Webhook* variable which URI will be `POSTed` by StepFunction's Termnial Task(Succeed / Fail)
 
 Deploy CDK Stacks on AWS
 
@@ -82,6 +82,10 @@ $ aws stepfunctions start-execution --state-machine-arn $STATE_MACHINE
 visit [**AWS StepFunctions Console**](https://ap-northeast-2.console.aws.amazon.com/states/home?region=ap-northeast-2#/statemachines) page and check if the statemachine is working
 
 <img src="img/statemachine.png">
+
+## Test
+
+ref [**notebook**](notebook/Xgboost.ipynb)
 
 # Cleanup
 
