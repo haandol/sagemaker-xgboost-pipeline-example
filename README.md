@@ -41,17 +41,18 @@ $ cdk deploy "*" --require-approval never
 
 ## Upload dataset to S3
 
-deployment will display state-machine-arn on the terminal,
+Deployment will display bucket arn on the terminal,
 
 *SagemakerXgboostDemoInfraStack.SagemakerBucketOutput = sagemakerxgboostdemoinfra-sagemakerbucketXXXXXXXX-YYYYYYYYYYYY*
 
-set it as environment for use later
+Set it as environment to use below
 
 ```bash
 $ export BUCKET_NAME=sagemakerxgboostdemoinfra-sagemakerbucketXXXXXXXX-YYYYYYYYYYYY
 ```
 
-upload original dataset to the bucket. the dataset is [**credit card clients dataset from UCI**](https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients)
+Upload original dataset to the bucket. the dataset is [**credit card clients dataset from UCI**](https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients)
+with the data, we are going to classify the given user whether overdue the load or not, next month.
 
 ```bash
 $ aws s3 cp ../data/card.xls s3://$BUCKET_NAME/card.xls
@@ -59,17 +60,17 @@ $ aws s3 cp ../data/card.xls s3://$BUCKET_NAME/card.xls
 
 ## Execute statemachine
 
-deployment will display state-machine-arn on the terminal,
+Deployment will display state-machine-arn on the terminal,
 
 *SagemakerXgboostDemoInfraStack.SagemakerStatesStatemachineArnXXXXXXXX = arn:aws:states:ap-northeast-2:XXXXXXXXXXXX:stateMachine:StateMachine*
 
-set it as environment for use later
+Set it as environment to use below
 
 ```bash
 $ export STATE_MACHINE=arn:aws:states:ap-northeast-2:XXXXXXXXXXXX:stateMachine:StateMachine
 ```
 
-run statemachine with AWSCLI
+Run statemachine with AWSCLI
 
 ```bash
 $ aws stepfunctions start-execution --state-machine-arn $STATE_MACHINE
@@ -79,13 +80,13 @@ $ aws stepfunctions start-execution --state-machine-arn $STATE_MACHINE
 }
 ```
 
-visit [**AWS StepFunctions Console**](https://ap-northeast-2.console.aws.amazon.com/states/home?region=ap-northeast-2#/statemachines) page and check if the statemachine is working
+Visit [**AWS StepFunctions Console**](https://ap-northeast-2.console.aws.amazon.com/states/home?region=ap-northeast-2#/statemachines) to see progress of the statemachine
 
 <img src="img/statemachine.png">
 
 ## Test
 
-ref [**notebook**](notebook/Xgboost.ipynb)
+Ref [**notebook**](notebook/Xgboost.ipynb)
 
 # Cleanup
 
