@@ -39,16 +39,10 @@ def handler(event, context):
         response = client.describe_training_job(
             TrainingJobName=job_name
         )
-        print(response)
         status = response['TrainingJobStatus']
     except:
         xgboost_container = sagemaker.image_uris.retrieve('xgboost', REGION, '1.2-1')
-        s3_input_train = TrainingInput(
-            s3_data='s3://{}/{}/train'.format(bucket, prefix), content_type='csv'
-        )
-        s3_input_validation = TrainingInput(
-            s3_data='s3://{}/{}/validation/'.format(bucket, prefix), content_type='csv'
-        )
+        checkpoint_path = f's3://{bucket}/{prefix}/checkpoints'
         output_path='s3://{}/{}/output'.format(bucket, prefix)
         estimator = sagemaker.estimator.Estimator(
             image_uri=xgboost_container, 
@@ -58,8 +52,23 @@ def handler(event, context):
             instance_type='ml.m5.2xlarge', 
             volume_size=5,
             output_path=output_path,
+            use_spot_instances=True,
+            checkpoint_s3_uri=checkpoint_path,
+            max_run=60*60,
+            max_wait=60*60,
+            enable_sagemaker_metrics=True,
+
         )
 
+        s3_input_train = TrainingInput(
+            s3_data=f's3://{bucket}/{prefix}/train',
+            content_type='text/csv',
+        )
+        s3_input_validation = TrainingInput(
+            s3_data=f's3://{bucket}/{prefix}/validation/',
+            content_type='text/csv',
+        )
+ 
         estimator.fit(
             {
                 'train': s3_input_train,
