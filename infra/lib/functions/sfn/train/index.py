@@ -24,7 +24,7 @@ def handler(event, context):
     event['stage'] = 'train'
 
     hyperparameters = event.get('hyperparameters', None)
-    hyperparameters = json.loads(hyperparameters) if hyperparameters else DEFAULT_HP
+    hyperparameters = hyperparameters if hyperparameters else DEFAULT_HP
 
     bucket = event['bucket']
     prefix = event['prefix']
