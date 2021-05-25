@@ -41,7 +41,7 @@ export class SagemakerStates extends cdk.Construct {
     const sagemakerExecutionRole = new iam.Role(this, 'SagemakerExecutionRole', {
       assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
       managedPolicies: [
-        { managedPolicyArn: 'arn:aws:iam::aws:policy/AmazonSageMakerAdmin-ServiceCatalogProductsServiceRolePolicy' },
+        { managedPolicyArn: 'arn:aws:iam::aws:policy/AmazonSageMakerFullAccess' },
       ],
     })
     bucket.grantReadWrite(sagemakerExecutionRole)
